@@ -57,8 +57,6 @@ func (amc *AuthenticatedMemberClient) GetFavoriteTracks(offset, limit int) (trac
         }
     }()
 
-    amLog.Debugf(amc.ctx, "GetFavoriteTracks")
-
     accessToken, err := amc.a.Authenticate()
     log.PanicIf(err)
 

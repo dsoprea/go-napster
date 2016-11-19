@@ -32,14 +32,14 @@ func main() {
     ctx := context.Background()
     hc := new(http.Client)
 
-    l.Debugf(ctx, "Getting favorites.")
+    l.Infof(ctx, "Getting favorites.")
 
     a := napster.NewAuthenticator(ctx, hc, apiKey, secretKey)
     a.SetUserCredentials(username, password)
 
     amc := napster.NewAuthenticatedMemberClient(ctx, hc, a)
 
-    offset := 100
+    offset := 50
     count := 10
 
     trackInfo, err := amc.GetFavoriteTracks(offset, count)
@@ -53,7 +53,7 @@ func main() {
         ids[i] = info.Id
     }
 
-    l.Debugf(ctx, "Retrieving track details.")
+    l.Infof(ctx, "Retrieving track details.")
 
     mc := napster.NewMetadataClient(ctx, hc, apiKey)
     tracks, err := mc.GetTrackDetail(ids...)

@@ -50,14 +50,14 @@ func main() {
     ctx := context.Background()
     hc := new(http.Client)
 
-    l.Debugf(ctx, "Getting favorites.")
+    l.Infof(ctx, "Getting favorites.")
 
     a := napster.NewAuthenticator(ctx, hc, apiKey, secretKey)
     a.SetUserCredentials(username, password)
 
     amc := napster.NewAuthenticatedMemberClient(ctx, hc, a)
 
-    offset := 100
+    offset := 50
     count := 10
 
     trackInfo, err := amc.GetFavoriteTracks(offset, count)
@@ -71,7 +71,7 @@ func main() {
         ids[i] = info.Id
     }
 
-    l.Debugf(ctx, "Retrieving track details.")
+    l.Infof(ctx, "Retrieving track details.")
 
     mc := napster.NewMetadataClient(ctx, hc, apiKey)
     tracks, err := mc.GetTrackDetail(ids...)
@@ -81,4 +81,22 @@ func main() {
         fmt.Printf("%d: %s\n", i, track.String())
     }
 }
+```
+
+Output:
+
+```
+$ NAPSTER_API_KEY="APIHERE" NAPSTER_SECRET_KEY="SECRETHERE" NAPSTER_USERNAME="USERNAMEHERE" NAPSTER_PASSWORD="PASSWORDHERE" GOPATH=`pwd`/../../../../.. go run example.go
+2016/11/19 00:43:43 main: Getting favorites.
+2016/11/19 00:43:44 main: Retrieving track details.
+0: MetadataTrackDetail(I=[Tra.6870863] AR=[3 Doors Down] AL=[Seventeen Days] N=[Never Will I Break])
+1: MetadataTrackDetail(I=[Tra.6870860] AR=[3 Doors Down] AL=[Seventeen Days] N=[Landing In London])
+2: MetadataTrackDetail(I=[Tra.3212111] AR=[3 Doors Down] AL=[Away From The Sun] N=[This Time])
+3: MetadataTrackDetail(I=[Tra.3212108] AR=[3 Doors Down] AL=[Away From The Sun] N=[Changes])
+4: MetadataTrackDetail(I=[Tra.3212104] AR=[3 Doors Down] AL=[Away From The Sun] N=[Running Out Of Days])
+5: MetadataTrackDetail(I=[Tra.3212103] AR=[3 Doors Down] AL=[Away From The Sun] N=[Ticket To Heaven])
+6: MetadataTrackDetail(I=[Tra.3212101] AR=[3 Doors Down] AL=[Away From The Sun] N=[Away From The Sun])
+7: MetadataTrackDetail(I=[Tra.1868845] AR=[Matchbox Twenty] AL=[Yourself Or Someone Like You] N=[Shame])
+8: MetadataTrackDetail(I=[Tra.1868838] AR=[Matchbox Twenty] AL=[Yourself Or Someone Like You] N=[Push])
+9: MetadataTrackDetail(I=[Tra.1868837] AR=[Matchbox Twenty] AL=[Yourself Or Someone Like You] N=[3 a.m.])
 ```
