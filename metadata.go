@@ -153,7 +153,9 @@ func (mc *MetadataClient) GetTrackDetail(id ...string) (tracks []MetadataTrackDe
         }
     }()
 
-    amLog.Debugf(mc.ctx, "GetTrackDetail")
+    if len(id) == 0 {
+        log.Panic(fmt.Errorf("no tracks provided"))
+    }
 
     inline := strings.Join(id, ",")
     urlRaw := fmt.Sprintf("%s/tracks/%s", api2UrlPrefix, inline)
