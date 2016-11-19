@@ -13,8 +13,6 @@ Implemented functionalities:
 
 ## Example Usage
 
-This file is available as [example.go](example/example.go):
-
 ```go
 package main
 
@@ -99,4 +97,39 @@ $ NAPSTER_API_KEY="APIHERE" NAPSTER_SECRET_KEY="SECRETHERE" NAPSTER_USERNAME="US
 7: MetadataTrackDetail(I=[Tra.1868845] AR=[Matchbox Twenty] AL=[Yourself Or Someone Like You] N=[Shame])
 8: MetadataTrackDetail(I=[Tra.1868838] AR=[Matchbox Twenty] AL=[Yourself Or Someone Like You] N=[Push])
 9: MetadataTrackDetail(I=[Tra.1868837] AR=[Matchbox Twenty] AL=[Yourself Or Someone Like You] N=[3 a.m.])
+```
+
+
+## Tools
+
+There is a [script](tools/print_favorites.go) to read, group, sort, and print a list of favorites. Set the same environment variables as above to pass the necessary arguments.
+
+Output:
+
+```
+OMC
+  How Bizarre
+    2: How Bizarre
+
+Of Mice and Men
+  Cold World
+    1: Game of War
+    3: Real
+    4: Like a Ghost
+    5: Contagious
+
+Orchestral Manoeuvres in the Dark (OMD)
+  Crush
+    1: So In Love
+
+Otherwise
+  Peace at All Costs
+    5: Coming for the Throne
+
+PFR
+  Great Lengths
+    1: Great Lengths  (Great Lengths Album Version)
+    3: Merry Go Round
+    5: It's You Jesus
+    8: See the Sun Again
 ```
