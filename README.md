@@ -8,6 +8,9 @@ Implemented functionalities:
 - Retrieve favorite tracks
 - Retrieve track detail for one or more tracks
 
+**I have only implemented the functionalities that I required. I would be appreciative and more than happy to merge pull-requests from other developers that wish to extend this project.** See the [documentation](https://developer.rhapsody.com/api) for more of what the API supports.
+
+
 ## Example Usage
 
 This file is available as [example.go](example/example.go):
