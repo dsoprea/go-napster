@@ -96,8 +96,6 @@ func doRequest(ctx context.Context, hc *http.Client, urlRaw string, verb string,
 
     clientLog.Debugf(ctx, "Call: [%s] [%s]", verb, urlRaw)
 
-//    dumpRequest(r)
-
     response, err = hc.Do(r)
     if err != nil {
         log.Panic(err)
@@ -148,17 +146,18 @@ func doJsonRequest(ctx context.Context, hc *http.Client, urlRaw string, verb str
 
     log.PanicIf(err)
 
+    // For debugging
     if result == nil {
         b := new(bytes.Buffer)
         b.ReadFrom(response.Body)
         message := b.String()
 
-        fmt.Println(message)
-    }
-
-    d := json.NewDecoder(response.Body)
-    if err := d.Decode(result); err != nil {
-        log.Panic(err)
+        clientLog.Debugf(ctx, "Not parsing return:\n%s", message)
+    } else {
+        d := json.NewDecoder(response.Body)
+        if err := d.Decode(result); err != nil {
+            log.Panic(err)
+        }
     }
 
     return nil

@@ -2,17 +2,15 @@ package napster
 
 import (
     "fmt"
-    "time"
 
     "net/http"
 
     "golang.org/x/net/context"
-
     "github.com/dsoprea/go-logging"
 )
 
 var (
-    napsterLog = log.NewLogger("napster.napster")
+    authLog = log.NewLogger("napster.authorization")
 )
 
 
@@ -66,8 +64,6 @@ func (a *Authenticator) Authenticate() (accessToken string, err error) {
         }
     }()
 
-    napsterLog.Debugf(a.ctx, "Authenticate")
-
 // TODO(dustin): !! We need to manage refreshing. This will be done where we 
 // actually make the calls.
     if a.atr == nil {
@@ -76,6 +72,8 @@ func (a *Authenticator) Authenticate() (accessToken string, err error) {
 
         a.atr = atr
     }
+
+    authLog.Debugf(a.ctx, "Authorization token: [%s]", a.atr.AccessToken)
 
     return a.atr.AccessToken, nil
 }
@@ -87,14 +85,14 @@ func (a *Authenticator) getToken() (atr *accessTokenResponse, err error) {
         }
     }()
 
-    napsterLog.Debugf(a.ctx, "Requested authentication token: [%s] [%s] [%s] [%s]", a.accessKey, a.secretKey, a.username, a.password)
+    authLog.Debugf(a.ctx, "Requested authentication token: [%s] [%s] [%s] [%s]", a.accessKey, a.secretKey, a.username, a.password)
 
 // TODO(dustin): Add support for other type(s) of authentication later.
     if a.username == "" || a.password == "" {
         log.Panic(fmt.Errorf("only user-credentials authentication currently supported"))
     }
 
-    urlRaw := "https://api.napster.com/oauth/token"
+    urlRaw := fmt.Sprintf("%s/oauth/token", apiUrlPrefix)
     verb := "POST"
 
     data := make(map[string]string)
@@ -114,72 +112,4 @@ func (a *Authenticator) getToken() (atr *accessTokenResponse, err error) {
     }
 
     return atr, nil
-}
-
-
-// Client Napster API client
-type Client struct {
-    ctx context.Context
-    hc *http.Client
-    a *Authenticator
-}
-
-func NewClient(ctx context.Context, hc *http.Client, a *Authenticator) *Client {
-    return &Client{
-        ctx: ctx,
-        hc: hc,
-        a: a,
-    }
-}
-
-
-//{"id":"tra.29611615","date":"2016-11-18T14:56:51.883Z","type":"favorite","links":{"tracks":{"ids":["tra.29611615"],"type":"track"}}},
-
-type TrackResult struct {
-    Id string               `json:"id"`
-    Timestamp time.Time     `json:"date"`
-    Type string             `json:"type"`
-    Links interface{}       `json:"links"`
-}
-
-func (tr *TrackResult) String() string {
-    return fmt.Sprintf("TrackResult(I=[%s] T=[%s])", tr.Id, tr.Timestamp.String())
-}
-
-
-type FavoriteTracksResult struct {
-    Favorites []TrackResult     `json:"favorites"`
-}
-
-
-func (c *Client) GetFavoriteTracks(offset, limit int) (tracks []TrackResult, err error) {
-    defer func() {
-        if state := recover(); state != nil {
-            err = state.(error)
-        }
-    }()
-
-    napsterLog.Debugf(c.ctx, "GetFavoriteTracks")
-
-    accessToken, err := c.a.Authenticate()
-    log.PanicIf(err)
-
-    urlRaw := "https://api.napster.com/v2.0/me/favorites"
-    verb := "GET"
-
-    parameters := make(map[string]string)
-    parameters["rights"] = "0"
-    parameters["filter"] = "track"
-    parameters["offset"] = fmt.Sprintf("%d", offset)
-    parameters["limit"] = fmt.Sprintf("%d", limit)
-
-    headers := make(map[string]string)
-    headers["Authorization"] = fmt.Sprintf("Bearer %s", accessToken)
-
-    ftr := new(FavoriteTracksResult)
-    if err := doJsonRequest(c.ctx, c.hc, urlRaw, verb, parameters, nil, headers, nil, ftr); err != nil {
-        log.Panic(err)
-    }
-
-    return ftr.Favorites, nil
 }
